@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DA-3 DBMS</title>
+    <style>
+
+
+h1{
+    width: 250px;
+  height: 200px;
+  position: relative;
+  background-color: red;
+  animation-name: example;
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+    
+}
+@keyframes example {
+  0%   {background-color:red; left:0px; top:0px;}
+  25%  {background-color:yellow; left:200px; top:0px;}
+  50%  {background-color:blue; left:200px; top:200px;}
+  75%  {background-color:green; left:0px; top:200px;}
+  100% {background-color:red; left:0px; top:0px;}
+}
+
+        h2{
+
+            color:purple;
+            background-color: yellow;;
+        }
+        
+        p{
+            color:red;
+        }
+        a{
+color:crimson;
+        }
+
+
+       
+    
+     table{
+            border-collapse:separate; 
+      border-spacing: 0 15px; 
+      } 
+      th{ 
+      background-color: #4287f5; 
+      color: white; 
+      } 
+      th,td{ 
+      width: 150px; 
+      text-align: center; 
+      border: 1px solid black; 
+      padding: 5px;
+      } 
+      h2{ 
+      color: #4287f5; 
+      } 
+        }
+    </style>
+</head>
+<body>
+          <h1>CURSORS AND TRIGGERS IN PL-SQL</h1>
+    <h2>cursors in PL/SQL</h2>
+    <br> Oracle creates a memory area, known as the context area, for processing an SQL statement, which contains all the information needed for processing the statement; for example, the number of rows processed, etc.
+        A cursor is a pointer to this context area. PL/SQL controls the context area through a cursor. A cursor holds the rows (one or more) returned by a SQL statement. The set of rows the cursor holds is referred to as the active set.
+        You can name a cursor so that it could be referred to in a program to fetch and process the rows returned by the SQL statement, one at a time. There are two types of cursors −
+        <ul type="circle">
+            <li>IMPLICIT CURSORS</li>
+            <li>EXPLICIT CURSORS</li>
+            </ul>
+    </p>
+    <h3>IMPLICIT CURSORS</h3>
+    <p>Implicit Cursors
+        Implicit cursors are automatically created by Oracle whenever an SQL statement is executed, when there is no explicit cursor for the statement. Programmers cannot control the implicit cursors and the information in it.
+        Whenever a DML statement (INSERT, UPDATE and DELETE) is issued, an implicit cursor is associated with this statement. For INSERT operations, the cursor holds the data that needs to be inserted. For UPDATE and DELETE operations, the cursor identifies the rows that would be affected.
+        In PL/SQL, you can refer to the most recent implicit cursor as the SQL cursor, which always has attributes such as %FOUND, %ISOPEN, %NOTFOUND, and %ROWCOUNT. The SQL cursor has additional attributes, %BULK_ROWCOUNT and %BULK_EXCEPTIONS, designed for use with the FORALL statement. The following table provides the description of the most used attributes </p>
+
+    <table style="width:100%">
+  <tr>
+    <th>S.NO</th>
+    <th>ATTRIBUTES AND USES</th> 
+  </tr>
+  <tr>
+    <td>1.</td>
+    <td>%FOUND<br>
+        Returns TRUE if an INSERT, UPDATE, or DELETE statement affected one or more rows or a SELECT INTO statement returned one or more rows. Otherwise, it returns FALSE.
+  </tr></td>
+  <tr>
+    <td>2.</td>
+    <td>%NOTFOUND<br>
+        The logical opposite of %FOUND. It returns TRUE if an INSERT, UPDATE, or DELETE statement affected no rows, or a SELECT INTO statement returned no rows. Otherwise, it returns FALSE.</td> </tr>
+    
+    <tr>  <td>3.</td>
+    <td>%ISOPEN<br>
+        Always returns FALSE for implicit cursors, because Oracle closes the SQL cursor automatically after executing its associated SQL statement.</td></tr>
+    
+    <tr>  <td>4.</td>
+    <td>%ROWCOUNT<br>
+        Returns the number of rows affected by an INSERT, UPDATE, or DELETE statement, or returned by a SELECT INTO statement.</td>
+  </tr>
+</table>
+<h4>
+    Any SQL cursor attribute will be accessed as sql%attribute_name 
+
+</h4>
+<h5><b>consider the table customers shown below:</b></h5>
+<h6>select * from customers;</h6>
+<table style="width:100%">
+    <tr>
+      <th>ID</th>
+      <th>NAME</th> 
+      <th>AGE</th>
+      <th>ADDRESS</th>
+      <th>SALARY</th>
+    </tr>
+    <tbody>
+        <tr>
+            <td>1.</td>
+            <td>RAMESH</td>
+            <td>32</td>
+            <td>AHMEDABAD</td>
+            <td>2500</td>
+            </tr>
+        <tr>
+            <td>2.</td>
+            <td>KHILAN</td>
+            <td>25</td>
+            <td>DELHI </td>
+            <td>2000</td>
+
+        </tr>
+        <tr>
+            <td>3.
+
+            </td>
+            <td>kaushik
+
+            </td>
+            <td>23.
+
+            </td>
+            <td>KOTA
+            </td>
+            <td>2500</td>
+        </tr>
+        <tr>
+            <td>4.</td>
+            <td>CHAITALI</td>
+            <td>25</td>
+             <td>MUMBAI </td>
+             <td>70000</td>
+        </tr>
+        <tr>
+            <td>5.</td>
+            <td>HARDIK</td>
+            <td>27</td>
+            <td>BHOPAL</td>
+            <td>9000</td>
+        </tr></tbody><table>
+       <h7>The following program will update the table and increase the salary of each customer by 500 and use the SQL%ROWCOUNT attribute to determine the number of rows affected −<br></h7>
+<h8>><strong>DECLARE<br>  
+    total_rows number(2); <br>
+ BEGIN <br>
+    UPDATE customers<br>
+    SET salary = salary + 500;<br>
+    IF sql%notfound THEN <br>
+       dbms_output.put_line('no customers selected'); <br>
+    ELSIF sql%found THEN <br>
+       total_rows := sql%rowcount;<br>
+       dbms_output.put_line( total_rows || ' customers selected ');<br>
+    END IF;<br>  
+ END;<br>
+ / <br>    </h8></table></strong>
+ <h9>When the above code is executed at the SQL prompt, it produces the following result −</h9><br>
+ 
+ <br>
+<h10> 5 customers selected<br>
+
+    PL/SQL procedure successfully completed.<br></h10>
+    <br>
+
+    <h11><strong>Explicit Cursors</strong></h11><br>
+    <p>Explicit cursors are programmer-defined cursors for gaining more control over the context area.<br>
+         An explicit cursor should be defined in the declaration section of the PL/SQL Block. It is created on a SELECT Statement which returns more than one row.</p><br>
+<h12>The syntax for creating an explicit cursor is −</h12><br>
+<h13><strong>CURSOR cursor_name IS select_statement;<br></strong> </h13>
+<br>
+<br>
+<h14><strong>Working with an explicit cursor includes the following steps −</strong><br></h14>
+<h15><strong>Declaring the Cursor</strong></h15><br>
+<h16>CURSOR c_customers IS<br>
+    SELECT id, name, address FROM customers;<br></h16>
+    <h17><strong>Opening the Cursor</h17></strong></h17><br>
+    <h18>OPEN c_customers;<br> </h18>
+    <h19>Example<br>
+        Following is a complete example to illustrate the concepts of explicit cursors &minua;</h19><br>
+
+        <h20><strong>DECLARE<br> 
+            c_id customers.id%type; <br>
+            c_name customer.name%type; <br>
+
+            c_addr customers.address%type; <br>
+            CURSOR c_customers is <br>
+               SELECT id, name, address FROM customers; <br>
+         BEGIN <br>
+            OPEN c_customers; <br>
+            LOOP <br>
+            FETCH c_customers into c_id, c_name, c_addr; <br>
+               EXIT WHEN c_customers%notfound; <br>
+               dbms_output.put_line(c_id || ' ' || c_name || ' ' || c_addr); <br>
+            END LOOP;<br>
+            CLOSE c_customers; <br>
+         END; <br>
+         /<br>
+         </strong>
+
+        </h20>
+        <h21><strong>The output is as follows:</strong></h21><br>
+        <p>1 Ramesh Ahmedabad<br>
+            2 Khilan Delhi<br>  
+            3 kaushik Kota<br>    
+            4 Chaitali Mumbai<br> 
+            5 Hardik Bhopal<br>   
+            6 Komal MP<br>  
+              
+            PL/SQL procedure successfully completed.<br></p>
+        </h21>
+        <a href="final2.html">CLICK HERE TO READ MORE ON TRIGGERS</a>
+
+
+</body>
